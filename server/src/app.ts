@@ -1,13 +1,14 @@
 import express, { Response } from "express";
 import path from "path"
-import home from "./routes";
 import { auth, requiresAuth } from "express-openid-connect";
 import { AuthConfig, AuthRequest } from "./types";
+import home from "./routes";
 
 process.env["NODE_CONFIG_DIR"] = path.join(__dirname, "/config/");
 import config from "config";
 
 const app = express();
+
 app.use(express.json());
 
 const authConfig: AuthConfig = config.get("authConfig");
