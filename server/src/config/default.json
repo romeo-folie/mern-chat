@@ -2,7 +2,7 @@
   "authConfig": {
     "authRequired": false,
     "auth0Logout": true,
-    "baseURL": "http://localhost:3000",
+    "baseURL": "http://localhost:5000",
     "clientID": "e9ULqEj42lzjCthtQESMiMLrcxbbAS0Q",
     "issuerBaseURL": "https://dev-i71i9udn.us.auth0.com",
     "secret": "9c8c87f9bbb1f6abd01a3be97fe4a95e192e3e713bd5b8a237a51af9aab9d37e"
