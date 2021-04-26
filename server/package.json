@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && cp -r src/config build",
     "dev": "nodemon src/server.ts",
-    "start": "node build/server.js"
+    "start": "yarn build && node build/server.js"
   },
   "keywords": [],
   "author": "Romeo Nutifafa Folie",

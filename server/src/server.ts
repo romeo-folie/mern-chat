@@ -17,13 +17,12 @@ const port = 5000;
 io.on("connection", (socket) => {
   socket.on("new user", (userObj, cb) => {
     const users = connectUser({ id: socket.id, ...userObj });
-    // console.log("active ", users)
     io.emit("users", users);
   });
 
   // add a handler for when a message is sent
   // it should save the message in mongodb
-  socket.on("sendMessage", async (data, cb) => {
+  socket.on("out message", async (data, cb) => {
     const { message, sender, recepient } = data;
 
     const chat: IChat = new Chat({
@@ -35,7 +34,7 @@ io.on("connection", (socket) => {
 
     await chat.save();
 
-    socket.to(recepient.id).emit("message", { sender, message });
+    socket.to(recepient.id).emit("in message", { sender, message });
     cb();
   });
 
@@ -45,7 +44,7 @@ io.on("connection", (socket) => {
     const messages: Array<IChat> = await Chat.find({
       senderEmail: { $in: [sender.email, recepient.email] },
     })
-      .limit(20)
+      .limit(100)
       .sort({ date: 1 });
 
     const transformedMessages = messages.map((m) => {
@@ -62,11 +61,6 @@ io.on("connection", (socket) => {
   // add an event handler for when a user is blocked
   // when this happens, they should be removed from the list of whoever they blocked
   socket.on("block user", (user, callback) => {
-    // remove the blocking user from the blocked
-    // user's list of active users
-    // I can get requesting user's socket id from here
-    // I can remove the requesting user from the activeUsers
-    // and emit that to only the user who was blocked
     const users = disconnectUser(socket.id);
     socket.to(user.id).emit("users", users);
     callback();

@@ -36,8 +36,9 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
   const messageWrapperRef = useRef(null);
 
   useEffect(() => {
-    socket.on("message", (data) => {
+    socket.on("in message", (data) => {
       const { sender } = data;
+
       if (sender.email === activeUser.email) {
         setMessages((messages) => [...messages, data]);
       }
@@ -50,7 +51,7 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
     messageWrapperRef.current.scrollIntoView({ behavior: "smooth", block: 'end' });
     // messageWrapperRef.current.scrollTop = messageWrapperRef.current.scrollHeight - messageWrapperRef.current.clientHeight;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeUser]);
 
   const handleMessageSubmit = (event) => {
     event.preventDefault();
@@ -63,7 +64,7 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
         message: message.trim(),
       };
 
-      socket.emit("sendMessage", messageData, () => {
+      socket.emit("out message", messageData, () => {
         setMessages((messages) => [...messages, messageData]);
         setMessage("");
       });
@@ -115,9 +116,9 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
         {Object.keys(activeUser).length && messages.length
           ? messages.map((m, idx) => {
               if (m.sender.email === activeUser.email) {
-                return <ReceivedMessage key={idx}>{m.message}</ReceivedMessage>;
+                return <ReceivedMessage key={m.message + idx.toString()}>{m.message}</ReceivedMessage>;
               }
-              return <SentMessage key={idx}>{m.message}</SentMessage>;
+              return <SentMessage key={m.message + idx.toString()}>{m.message}</SentMessage>;
             })
           : null}
       </MessageWrapper>
