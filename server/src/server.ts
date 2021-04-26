@@ -1,49 +1,80 @@
 import app from "./app";
 import { Server } from "socket.io";
 import http from "http";
+import { connectUser, disconnectUser } from "./utils/users";
+import Chat, { IChat } from "./models/chat";
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: true,
     methods: ["GET", "POST"],
-  }
+  },
 });
 
 const port = 5000;
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
-  
-  // when a user joins
-  // check that the user isn't already connected
-  // this is so the code here doesn't run twice for the same user
-  // we can check this with socket.connected
-  // some of their old messages should be fetched
-  // they should be added to the list of all users
-  // an online status should be displayed for them
-
-
-  socket.on("testing", (data) => {
-    console.log(data);
-  })
+  socket.on("new user", (userObj, cb) => {
+    const users = connectUser({ id: socket.id, ...userObj });
+    // console.log("active ", users)
+    io.emit("users", users);
+  });
 
   // add a handler for when a message is sent
   // it should save the message in mongodb
+  socket.on("sendMessage", async (data, cb) => {
+    const { message, sender, recepient } = data;
 
+    const chat: IChat = new Chat({
+      senderEmail: sender.email,
+      recepientEmail: recepient.email,
+      message,
+      date: new Date(),
+    });
+
+    await chat.save();
+
+    socket.to(recepient.id).emit("message", { sender, message });
+    cb();
+  });
 
   // another handler that gets all the old messages
-  // these should be passed to the frontend through the callback that can be passed
-  // as second arg to socket.on's callback
+  socket.on("load conversation", async ({ sender, recepient }) => {
+    // get all conversations between these two
+    const messages: Array<IChat> = await Chat.find({
+      senderEmail: { $in: [sender.email, recepient.email] },
+    })
+      .limit(20)
+      .sort({ date: 1 });
+
+    const transformedMessages = messages.map((m) => {
+      if (m.senderEmail === sender.email) {
+        return { message: m.message, sender, recepient };
+      } else {
+        return { message: m.message, sender: recepient, recepient: sender };
+      }
+    });
+
+    socket.emit("loaded conversation", transformedMessages);
+  });
 
   // add an event handler for when a user is blocked
   // when this happens, they should be removed from the list of whoever they blocked
-
+  socket.on("block user", (user, callback) => {
+    // remove the blocking user from the blocked
+    // user's list of active users
+    // I can get requesting user's socket id from here
+    // I can remove the requesting user from the activeUsers
+    // and emit that to only the user who was blocked
+    const users = disconnectUser(socket.id);
+    socket.to(user.id).emit("users", users);
+    callback();
+  });
 
   socket.on("disconnect", () => {
-    console.log("a user disconnected");
-    //when a user disconnects, they should be removed from the list of users
-
+    const users = disconnectUser(socket.id);
+    io.emit("users", users);
   });
 });
 

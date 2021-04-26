@@ -1,11 +1,9 @@
-import express, { Response } from "express";
-import path from "path"
-import { auth, requiresAuth } from "express-openid-connect";
-import { AuthConfig, AuthRequest } from "./types";
+import express from "express";
 import cors from "cors"
-import home from "./routes";
+import mongoose from "mongoose";
+import path from "path"
 
-process.env["NODE_CONFIG_DIR"] = path.join(__dirname, "/config/");
+process.env['NODE_CONFIG_DIR'] = path.join(__dirname, "/config/")
 import config from "config";
 
 const app = express();
@@ -13,19 +11,20 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 
-// const authConfig: AuthConfig = config.get("authConfig");
+const uri: string = config.get("mongoUri")
 
-// app.use(auth(authConfig))
+const connectToDB = async (): Promise<void> => {
+  try {
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+  } catch (error) {
+    console.log("db connection error ", error);
+    process.exit(1);
+  }
+};
 
-
-// app.get('/', (req: AuthRequest, res: Response) => {
-//   res.send(req.oidc?.isAuthenticated() ? 'Logged in' : 'Logged out')
-// })
-
-// app.get('/profile', requiresAuth(), (req: AuthRequest, res: Response) => {
-//   res.send(JSON.stringify(req.oidc?.user));
-// })
-
-// app.use("/", home);
+connectToDB()
 
 export default app;

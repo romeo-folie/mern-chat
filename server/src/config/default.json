@@ -6,5 +6,6 @@
     "clientID": "e9ULqEj42lzjCthtQESMiMLrcxbbAS0Q",
     "issuerBaseURL": "https://dev-i71i9udn.us.auth0.com",
     "secret": "9c8c87f9bbb1f6abd01a3be97fe4a95e192e3e713bd5b8a237a51af9aab9d37e"
-  }
+  },
+  "mongoUri": "mongodb+srv://romeo:AAfBF4cRSE9eosxT@chatcluster.f9p8x.mongodb.net/chatDatabase?retryWrites=true&w=majority"
 }
