@@ -1,33 +1,54 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { io } from "socket.io-client";
-import { HomeContainer } from './homepage.styles'
+import { HomeContainer } from "./homepage.styles";
 import Sidebar from "../components/sidebar/sidebar.component";
 import Chat from "../components/chat/chat.component";
+import { SocketContext } from "../context/socket";
 
-const Homepage = (props) => {
-  const {
-    // loginWithRedirect,
-    // logout,
-    // isAuthenticated,
-    // isLoading,
-    user,
-  } = useAuth0();
-  const endpoint = "http://localhost:5000"
+const Homepage = () => {
+  const { user } = useAuth0();
+  const socket = useContext(SocketContext);
+
+  const [users, setUsers] = useState([]);
+  const [activeUser, setActiveUser] = useState({});
 
   useEffect(() => {
-    const socket = io(endpoint)
-    socket.emit("testing", user)
+    socket.emit("new user", user, (error) => {
+      if (error) {
+        alert(error);
+      }
+    });
 
     return () => {
-      socket.disconnect()
-    }
-  }, [user])
+      socket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socket.on("users", (userData) => {
+      userData = userData.filter(
+        (use) => use.name !== user.name && use.email !== user.email
+      );
+      setUsers(userData);
+      setActiveUser({});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onUserSelect = (user) => {
+    setActiveUser({...user});
+  };
 
   return (
     <HomeContainer>
-      <Sidebar />
-      <Chat />
+      <Sidebar
+        user={user}
+        users={users}
+        onUserSelect={onUserSelect}
+        activeUser={activeUser}
+      />
+      <Chat user={user} activeUser={activeUser} onBlockUser={onUserSelect}/>
     </HomeContainer>
   );
 };

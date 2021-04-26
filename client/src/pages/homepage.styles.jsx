@@ -6,4 +6,5 @@ export const HomeContainer = tw.div`
   bg-cyan
   h-screen
   w-full
+  relative
 `

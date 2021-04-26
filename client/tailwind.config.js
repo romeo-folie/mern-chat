@@ -10,7 +10,8 @@ module.exports = {
       'transparent': 'transparent',
       'teal': '#02A288',
       'white': colors.white,
-      'red': colors.red
+      'red': colors.red,
+      'green': colors.green,
     }),
     colors: {
       'dark-blue': '#1B223C',
@@ -18,7 +19,8 @@ module.exports = {
       'ash': '#B0C9D1',
       'cyan': '#F3F6FB',
       'white': colors.white,
-      'red': colors.red
+      'red': colors.red,
+      'green': colors.green,
     },
     maxWidth: {
       '1/4': '25%',
@@ -32,7 +34,9 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      opacity: ['disabled'],
+    },
   },
   plugins: [],
 }

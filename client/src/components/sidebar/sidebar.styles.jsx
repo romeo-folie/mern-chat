@@ -16,12 +16,14 @@ export const UserListWrapper = tw.div`
   items-center
   h-full
   overflow-y-auto  
-  overscroll-none
+  overscroll-contain
   mt-10
 `
 
 export const SidebarHeader = tw.div`
   flex
+  px-3
+  justify-between
   h-20
   border-b
   border-cyan
@@ -41,8 +43,19 @@ export const SidebarFooter = tw.div`
 export const SidebarTitle = tw.h2`
   text-2xl
   text-left
-  pl-8
   py-6
   text-dark-blue
   font-bold
+`
+
+export const LogoutButton = tw.button`
+  h-9
+  w-24
+  py-2
+  px-3
+  bg-red-600
+  rounded-md
+  text-white
+  text-sm
+  focus:outline-none
 `

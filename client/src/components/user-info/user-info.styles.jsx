@@ -1,15 +1,18 @@
 import tw from 'tailwind-styled-components'
 
-export const UserInfoContainer = tw.div`
+export const InfoContainer = tw.div`
   flex
   justify-start
-  ${props => props.header ? "" : "w-10/12"}
-  ${props => props.active ? "bg-cyan" : "bg-transparent"}
   rounded-lg
   py-3
   pl-3
   my-1
   items-center
+`
+
+export const UserInfoContainer = tw(InfoContainer)`
+  w-10/12
+  ${props => props.active ? "bg-cyan" : "bg-transparent"}
   cursor-pointer
 `
 
@@ -27,10 +30,13 @@ export const UserTitle = tw.h4`
   text-dark-blue
 `
 
-export const UserSubTitle = tw.h5`
+export const InfoSubTitle = tw.h5`
   text-sm
   font-normal
   text-left
+`
+
+export const UserSubTitle = tw(InfoSubTitle)`
   ${props => props.mail ? "text-ash" : "text-teal"}
 `
 
