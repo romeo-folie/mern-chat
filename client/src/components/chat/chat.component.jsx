@@ -107,9 +107,9 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
           </BlockButton>
         ) : null}
 
-        {Object.keys(activeUser).length && activeUser.blocked ? (
+        {/* {Object.keys(activeUser).length && activeUser.blocked ? (
           <UnblockButton>Unblock</UnblockButton>
-        ) : null}
+        ) : null} */}
       </ChatHeader>
 
       <MessageWrapper ref={messageWrapperRef}>
