@@ -32,10 +32,10 @@ io.on("connection", (socket) => {
       date: new Date(),
     });
 
-    await chat.save();
+    const savedMessage = await chat.save();
 
-    socket.to(recepient.id).emit("in message", { sender, message });
-    cb();
+    socket.to(recepient.id).emit("in message", { sender, message: { text: savedMessage.message, id: savedMessage._id } });
+    cb({ sender, message: { text: savedMessage.message, id: savedMessage._id } });
   });
 
   // another handler that gets all the old messages
@@ -49,9 +49,9 @@ io.on("connection", (socket) => {
 
     const transformedMessages = messages.map((m) => {
       if (m.senderEmail === sender.email) {
-        return { message: m.message, sender, recepient };
+        return { message: {text: m.message, id: m._id}, sender, recepient };
       } else {
-        return { message: m.message, sender: recepient, recepient: sender };
+        return { message: {text: m.message, id: m._id}, sender: recepient, recepient: sender };
       }
     });
 

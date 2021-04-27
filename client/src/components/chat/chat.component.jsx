@@ -6,7 +6,7 @@ import {
   ChatInput,
   SendButton,
   BlockButton,
-  UnblockButton,
+  // UnblockButton,
   MessageWrapper,
   SentMessage,
   ReceivedMessage,
@@ -48,7 +48,10 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
       setMessages(data);
     });
 
-    messageWrapperRef.current.scrollIntoView({ behavior: "smooth", block: 'end' });
+    messageWrapperRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
     // messageWrapperRef.current.scrollTop = messageWrapperRef.current.scrollHeight - messageWrapperRef.current.clientHeight;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeUser]);
@@ -58,18 +61,17 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
 
     //emit a new event here with the message as well as the active user's socket id
     if (message) {
-      const messageData = {
+      const sentMessageData = {
         sender: user,
         recepient: activeUser,
         message: message.trim(),
       };
 
-      socket.emit("out message", messageData, () => {
-        setMessages((messages) => [...messages, messageData]);
+      socket.emit("out message", sentMessageData, (receivedMessageData) => {
+        setMessages((messages) => [...messages, receivedMessageData]);
         setMessage("");
       });
     }
-
   };
 
   const handleMessageInputChange = (event) => {
@@ -116,9 +118,17 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
         {Object.keys(activeUser).length && messages.length
           ? messages.map((m, idx) => {
               if (m.sender.email === activeUser.email) {
-                return <ReceivedMessage key={m.message + idx.toString()}>{m.message}</ReceivedMessage>;
+                return (
+                  <ReceivedMessage key={m.message.id}>
+                    {m.message.text}
+                  </ReceivedMessage>
+                );
               }
-              return <SentMessage key={m.message + idx.toString()}>{m.message}</SentMessage>;
+              return (
+                <SentMessage key={m.message.id}>
+                  {m.message.text}
+                </SentMessage>
+              );
             })
           : null}
       </MessageWrapper>
