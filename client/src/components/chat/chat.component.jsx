@@ -33,25 +33,35 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
   const socket = useContext(SocketContext);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const messageWrapperRef = useRef(null);
+  const messageWrapperRef = useRef();
+
+  console.log(messageWrapperRef);
 
   useEffect(() => {
-    socket.on("in message", (data) => {
+    const receivedMessageHandler = (data) => {
       const { sender } = data;
 
       if (sender.email === activeUser.email) {
         setMessages((messages) => [...messages, data]);
       }
-    });
+    };
+    socket.on("in message", receivedMessageHandler);
 
-    socket.on("loaded conversation", (data) => {
+    const loadedConversationHandler = (data) => {
       setMessages(data);
-    });
+    };
+    socket.on("loaded conversation", loadedConversationHandler);
 
     messageWrapperRef.current.scrollIntoView({
       behavior: "smooth",
-      block: "end",
+      block: "nearest",
+      inline: "start",
     });
+
+    return () => {
+      socket.off("in message", receivedMessageHandler);
+      socket.off("loaded conversation", loadedConversationHandler);
+    };
     // messageWrapperRef.current.scrollTop = messageWrapperRef.current.scrollHeight - messageWrapperRef.current.clientHeight;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeUser]);
@@ -70,6 +80,11 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
       socket.emit("out message", sentMessageData, (receivedMessageData) => {
         setMessages((messages) => [...messages, receivedMessageData]);
         setMessage("");
+        messageWrapperRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
       });
     }
   };
@@ -82,7 +97,7 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
     // block the active user
     // emit an event with this
     user.blocked = true;
-    socket.emit("block user", {user, blocker}, () => onBlockUser(user));
+    socket.emit("block user", { user, blocker }, () => onBlockUser(user));
   };
 
   const handleKeyDown = (event) => {
@@ -115,22 +130,20 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
       </ChatHeader>
 
       <MessageWrapper ref={messageWrapperRef}>
-        {Object.keys(activeUser).length && messages.length
-          ? messages.map((m, idx) => {
-              if (m.sender.email === activeUser.email) {
+          {Object.keys(activeUser).length && messages.length
+            ? messages.map((m) => {
+                if (m.sender.email === activeUser.email) {
+                  return (
+                    <ReceivedMessage key={m.message.id}>
+                      {m.message.text}
+                    </ReceivedMessage>
+                  );
+                }
                 return (
-                  <ReceivedMessage key={m.message.id}>
-                    {m.message.text}
-                  </ReceivedMessage>
+                  <SentMessage key={m.message.id}>{m.message.text}</SentMessage>
                 );
-              }
-              return (
-                <SentMessage key={m.message.id}>
-                  {m.message.text}
-                </SentMessage>
-              );
-            })
-          : null}
+              })
+            : null}
       </MessageWrapper>
 
       <ChatFooter>

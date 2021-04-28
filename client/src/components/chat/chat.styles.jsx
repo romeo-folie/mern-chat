@@ -4,15 +4,15 @@ import { InfoContainer, UserSubTitle } from '../user-info/user-info.styles'
 export const ChatContainer = tw.div`
   flex
   flex-col
-  h-full
+  h-screen
   w-3/4
-  justify-between
   pb-4
+  justify-between
 `
 
 export const MessageWrapper = tw.div`
   p-5
-  justify-end
+  block
   h-full
   w-full
   overflow-y-auto
@@ -27,11 +27,10 @@ export const SubTitle = tw(UserSubTitle)`
   text-ash
 `
 
-export const ChatHeader = tw.header`
+export const ChatHeader = tw.div`
   h-20
   flex
   justify-between
-  w-full
   bg-white
   items-center
   px-3
@@ -67,11 +66,11 @@ export const UnblockButton = tw.button`
   hover:bg-green-600
 `
 
-export const ChatFooter = tw.footer`
+export const ChatFooter = tw.div`
   flex
+  h-14
   w-full
   justify-around
-  h-14
   items-center
 `
 
