@@ -33,9 +33,7 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
   const socket = useContext(SocketContext);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const messageWrapperRef = useRef();
-
-  console.log(messageWrapperRef);
+  const messageWrapperRef = useRef(null);
 
   useEffect(() => {
     const receivedMessageHandler = (data) => {
@@ -52,10 +50,9 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
     };
     socket.on("loaded conversation", loadedConversationHandler);
 
-    messageWrapperRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start",
+    messageWrapperRef.current.addEventListener('DOMNodeInserted', event => {
+      const { currentTarget: target } = event;
+      target.scroll({ top: target.scrollHeight, behavior: 'smooth' });
     });
 
     return () => {
@@ -80,11 +77,6 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
       socket.emit("out message", sentMessageData, (receivedMessageData) => {
         setMessages((messages) => [...messages, receivedMessageData]);
         setMessage("");
-        messageWrapperRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
       });
     }
   };
