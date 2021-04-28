@@ -3,7 +3,6 @@ import { Server } from "socket.io";
 import http from "http";
 import { connectUser, disconnectUser } from "./utils/users";
 import Chat, { IChat } from "./models/chat";
-import c from "config";
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -23,7 +22,7 @@ io.on("connection", (socket) => {
 
   // add a handler for when a message is sent
   // it should save the message in mongodb
-  socket.on("out message", async (data, cb) => {
+  socket.on("out message", async (data, cb): Promise<void> => {
     const { message, sender, recepient } = data;
 
     const chat: IChat = new Chat({
@@ -48,7 +47,7 @@ io.on("connection", (socket) => {
   });
 
   // another handler that gets all the old messages
-  socket.on("load conversation", async ({ sender, recepient }) => {
+  socket.on("load conversation", async ({ sender, recepient }): Promise<void> => {
     // get all conversations between these two
     const messages: Array<IChat> = await Chat.find({
 

@@ -59,7 +59,6 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
       socket.off("in message", receivedMessageHandler);
       socket.off("loaded conversation", loadedConversationHandler);
     };
-    // messageWrapperRef.current.scrollTop = messageWrapperRef.current.scrollHeight - messageWrapperRef.current.clientHeight;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeUser]);
 
