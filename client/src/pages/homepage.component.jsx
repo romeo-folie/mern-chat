@@ -31,6 +31,14 @@ const Homepage = () => {
         (use) => use.name !== user.name && use.email !== user.email
       );
       setUsers(userData);
+    });
+
+    socket.on("users on block", (userData) => {
+      let { users } = userData
+      users = users.filter(
+        (use) => use.name !== user.name && use.email !== user.email
+      );
+      setUsers(users);
       setActiveUser({});
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

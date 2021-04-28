@@ -78,11 +78,11 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
     setMessage(event.target.value);
   };
 
-  const handleBlockClick = (user) => {
+  const handleBlockClick = (user, blocker) => {
     // block the active user
     // emit an event with this
     user.blocked = true;
-    socket.emit("block user", user, () => onBlockUser(user));
+    socket.emit("block user", {user, blocker}, () => onBlockUser(user));
   };
 
   const handleKeyDown = (event) => {
@@ -104,7 +104,7 @@ const Chat = ({ user, activeUser, onBlockUser }) => {
           image={activeUser.picture}
         />
         {Object.keys(activeUser).length && !activeUser.blocked ? (
-          <BlockButton onClick={() => handleBlockClick(activeUser)}>
+          <BlockButton onClick={() => handleBlockClick(activeUser, user)}>
             Block
           </BlockButton>
         ) : null}
